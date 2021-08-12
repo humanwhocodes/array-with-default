@@ -1,0 +1,10 @@
+{
+    "include": [
+        "dist/array-with-default.js"
+    ],
+    "compilerOptions": {
+        "declaration": true,
+        "emitDeclarationOnly": true,
+        "allowJs": true
+    }
+}
