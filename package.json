@@ -1,6 +1,6 @@
 {
   "name": "@humanwhocodes/array-with-default",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "An array with default values for missing indices.",
   "type": "module",
   "main": "dist/array-with-default.cjs",
