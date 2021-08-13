@@ -1,4 +1,3 @@
-import { Env } from "@humanwhocodes/env";
+import { ArrayWithDefault } from "@humanwhocodes/array-with-default";
 
-const env = new Env();
-const username = env.get("USERNAME");
+new ArrayWithDefault({ default: 1 });
