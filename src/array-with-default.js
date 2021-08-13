@@ -37,7 +37,8 @@ export class ArrayWithDefault extends Array {
 
                 const value = target[property];
 
-                if (typeof property === "symbol") {
+                // symbol properties excluded
+                if (typeof property !== "string") {
                     return value;
                 }
 
@@ -65,6 +66,9 @@ export class ArrayWithDefault extends Array {
         });
     }
 
+    /**
+     * Ensure methods that produce arrays still use Array.
+     */
     static get[Symbol.species]() {
         return Array;
     }
