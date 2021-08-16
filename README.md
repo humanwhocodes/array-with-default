@@ -26,7 +26,7 @@ const items = new ArrayWithDefault({
 console.log(items[1]);      // 0
 ```
 
-The primary use case for this class is when an array is an optional argument for a function, but using an empty array won't work.
+The primary use case for this class is when an array is an optional argument for a function or when an array may have holes.
 
 ## Usage
 
@@ -81,6 +81,7 @@ After importing, create a new instance of `ArrayWithDefault`. The constructor ex
 * `default` **(required)** - the default value to return for the missing items.
 * `elements` - an optional iterable object used to populate the array.
 * `length` - an optional value to set the array's `length` property to.
+* `outOfRange` - an optional value that, when set to `true`, indicates that numeric indices after the end of the array should also return the default value.
 
 Here are some examples:
 
@@ -115,6 +116,19 @@ console.log(emptyItems[4]);     // 0
 // items past the end still return undefined
 console.log(emptyItems[5]);     // undefined
 
+const numbers = new ArrayWithDefault({
+    default: 0,
+    elements: [1, 2, 3],
+    outOfRange: true
+});
+
+// all elements return 0
+console.log(emptyItems[0]);     // 1
+console.log(emptyItems[1]);     // 2
+console.log(emptyItems[2]);     // 3
+console.log(emptyItems[3]);     // 0
+console.log(emptyItems[4]);     // 0
+console.log(emptyItems[5]);     // 0
 ```
 
 ## Developer Setup

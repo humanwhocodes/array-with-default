@@ -143,15 +143,44 @@ describe("ArrayWithDefault", () => {
             expect(itemsWithDefault).to.deep.equal([0, 0, 0, 0, 0]);
         });
 
-        it("should return default when element is missing", () => {
+        it("should set length when elements are passed", () => {
 
             const itemsWithDefault = new ArrayWithDefault({
+                elements: [1, 2, 3],
                 length: 5,
                 default: 0
             });
 
-            expect(itemsWithDefault).to.deep.equal([0, 0, 0, 0, 0]);
+            expect(itemsWithDefault.length).to.equal(5);
+            expect(itemsWithDefault).to.deep.equal([1, 2, 3, 0, 0]);
         });
+    });
+
+    describe("outOfRange", () => {
+
+        it("should return default for elements after the last element", () => {
+
+            const itemsWithDefault = new ArrayWithDefault({
+                default: 0,
+                outOfRange: true
+            });
+
+            expect(itemsWithDefault[0]).to.equal(0);
+            expect(itemsWithDefault[1]).to.equal(0);
+        });
+
+        it("should return default for elements after the last element when length is set", () => {
+
+            const itemsWithDefault = new ArrayWithDefault({
+                default: 0,
+                length: 5,
+                outOfRange: true
+            });
+
+            expect(itemsWithDefault[0]).to.equal(0);
+            expect(itemsWithDefault[5]).to.equal(0);
+        });
+
     });
 
     describe("concat()", () => {

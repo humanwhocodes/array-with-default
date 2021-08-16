@@ -16,6 +16,8 @@ export class ArrayWithDefault extends Array {
      * @param {Array} [options.elements] The array elements to prepopulate into
      *      the array.
      * @param {number} [options.length] The number of elements in the array.
+     * @param {boolean} [options.outOfRange=false] When true, the default value
+     *      with also be returned for indices after the last element.
      */
     constructor(options = {}) {
         super();
@@ -55,7 +57,7 @@ export class ArrayWithDefault extends Array {
                  */
                 if (
                     Number.isInteger(index) && 
-                    index < target.length &&
+                    (options.outOfRange || index < target.length) &&
                     value === undefined
                 ) {
                     return options.default;
