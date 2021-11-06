@@ -12,7 +12,7 @@ export class ArrayWithDefault extends Array {
     /**
      * Creates a new instance.
      * @param {Object} options
-     * @param {*} options.default The default value for missing elements.
+     * @param {*} options.default The default value/callback for missing elements.
      * @param {Array} [options.elements] The array elements to prepopulate into
      *      the array.
      * @param {number} [options.length] The number of elements in the array.
@@ -20,13 +20,14 @@ export class ArrayWithDefault extends Array {
      *      with also be returned for indices after the last element.
      */
     constructor(options = {}) {
+
         super();
 
         if (!("default" in options)) {
             throw new TypeError("Missing default value.");
         }
 
-        if (options.elements) {
+        if (Array.isArray(options.elements)) {
             this.push(...options.elements);
         }
 
@@ -37,33 +38,43 @@ export class ArrayWithDefault extends Array {
         return new Proxy(this, {
             get(target, property) {
 
-                const value = target[property];
+                const currValue = target[property];
 
-                // symbol properties excluded
+                // return for Symbol properties
                 if (typeof property !== "string") {
-                    return value;
+                    return currValue;
                 }
 
                 const index = Number(property);
 
                 /*
-                 * We only want to return the default when the index
-                 * is numeric (an array element), when the index is less
-                 * than the length of the array (indicating a missing element),
-                 * and when the value is undefined.
-                 * 
-                 * For an index beyond the length of the array, or a string or
-                 * symbol property, just return the regular value.
+                 * We only want to return the default when:
+                 * - index is numeric (an array element),
+                 * - currValue is undefined
+                 * - index is less than the length of the array, or out-of-range
+                 *
+                 * If default is a callback, assign its result to the missing element.
                  */
                 if (
-                    Number.isInteger(index) && 
-                    (options.outOfRange || index < target.length) &&
-                    value === undefined
+                    Number.isInteger(index) &&
+                    currValue === undefined &&
+                    (options.outOfRange || index < target.length)
                 ) {
-                    return options.default;
+                    let defaultValue = options.default;
+
+                    if (typeof defaultValue === "function") {
+                        // resolve the callback defaultValue
+                        defaultValue = defaultValue(index);
+                        return target[property] = defaultValue;
+                    }
+
+                    return defaultValue;
                 }
 
-                return value;
+                /*
+                 * When index is beyond the length of the array, and no out-of-range, just return the currValue.
+                 */
+                return currValue;
             }
         });
     }
@@ -71,7 +82,7 @@ export class ArrayWithDefault extends Array {
     /**
      * Ensure methods that produce arrays still use Array.
      */
-    static get[Symbol.species]() {
+    static get [Symbol.species]() {
         return Array;
     }
 }

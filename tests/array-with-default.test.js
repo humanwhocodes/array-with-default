@@ -31,9 +31,9 @@ describe("ArrayWithDefault", () => {
         });
 
         it("should copy elements argument into array", () => {
-            const items = [1,2,3];
+            const items = [1, 2, 3];
             const itemsWithDefault = new ArrayWithDefault({
-                elements:items,
+                elements: items,
                 default: 0
             });
 
@@ -43,7 +43,7 @@ describe("ArrayWithDefault", () => {
     });
 
     describe("get array element", () => {
-        
+
         it("should retrieve element when element exists", () => {
             const items = [1, 2, 3];
             const itemsWithDefault = new ArrayWithDefault({
@@ -184,17 +184,63 @@ describe("ArrayWithDefault", () => {
     });
 
     describe("concat()", () => {
-        
+
         it("should return an instance of Array when called", () => {
 
             const itemsWithDefault = new ArrayWithDefault({
-                elements: [1,2,3],
+                elements: [1, 2, 3],
                 default: 0
             });
 
-            const newItems = itemsWithDefault.concat([4,5,6]);
-            expect(newItems).to.deep.equal([1,2,3,4,5,6]);
+            const newItems = itemsWithDefault.concat([4, 5, 6]);
+            expect(newItems).to.deep.equal([1, 2, 3, 4, 5, 6]);
             expect(newItems).to.be.instanceOf(Array);
+
+        });
+
+    });
+
+    describe("default callback", () => {
+
+        it("should resolve default callback with index, number", () => {
+
+            const itemsWithDefault = new ArrayWithDefault({
+                elements: [1, 2, 3],
+                default: (index) => index + 1,
+                outOfRange: true,
+            });
+
+            expect(itemsWithDefault[4]).to.equal(5);
+
+        });
+
+        it("should resolve default callback with index, object", () => {
+
+            const itemsWithDefault = new ArrayWithDefault({
+                elements: [1, undefined, 3],
+                default: (index) => ({ index: index + 1 }),
+                outOfRange: true,
+            });
+
+            expect(itemsWithDefault[0]).to.equal(1);
+            expect(itemsWithDefault[1]).to.deep.equal({ index: 2 });
+            expect(itemsWithDefault[1]).to.equal(itemsWithDefault[1]);
+            expect(itemsWithDefault[1]).to.not.equal({ index: 2 });
+            expect(itemsWithDefault[99]).to.deep.equal({ index: 100 });
+
+        });
+
+        it("should not resolve out-of-range default callback", () => {
+
+            const itemsWithDefault = new ArrayWithDefault({
+                elements: [1, undefined, 3],
+                default: (index) => ({ index: index + 1 }),
+            });
+
+            expect(itemsWithDefault[0]).to.equal(1);
+            expect(itemsWithDefault[1]).to.deep.equal({ index: 2 });
+            expect(itemsWithDefault[1]).to.equal(itemsWithDefault[1]);
+            expect(itemsWithDefault[99]).to.be.undefined;
 
         });
 

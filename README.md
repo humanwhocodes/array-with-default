@@ -6,24 +6,31 @@ If you find this useful, please consider supporting my work with a [donation](ht
 
 ## Description
 
-A class that represents an array where missing elements return a specified default value.
+A class that represents an array where missing elements return a specified default value. Wraps a Proxy for call interception.
 
 The built-in JavaScript `Array` class automatically returns `undefined` when you attempt to access a missing element. Here's an example:
 
 ```js
-const items = [1, , 3];
+const items = [1, ,3];
 console.log(items[1]);      // undefined
 ```
 
-In most cases that is okay, but in some cases you may want an alternate default value returned. The `ArrayWithDefault` class does that:
+In most cases that is okay, but in some cases you may want an alternative default value returned. The `ArrayWithDefault` class does that:
 
 ```js
-const items = new ArrayWithDefault({
-    default: 0
-    elements: [1, , 3]
+const items1 = new ArrayWithDefault({
+    default: 0,
+    elements: [1, ,3]
 });
 
-console.log(items[1]);      // 0
+console.log(items1[1]);  // 0
+
+const items2 = new ArrayWithDefault({
+    default: (index) => ({ id: index }), // callback
+    elements: [{ id: 0 }, ,{ id: 2 }]
+});
+
+console.log(items2[1]);  // { id: 1 }
 ```
 
 The primary use case for this class is when an array is an optional argument for a function or when an array may have holes.
@@ -34,7 +41,7 @@ The primary use case for this class is when an array is an optional argument for
 
 Install using [npm][npm] or [yarn][yarn]:
 
-```
+```bash
 npm install @humanwhocodes/array-with-default --save
 
 # or
@@ -79,6 +86,7 @@ import { ArrayWithDefault } from "https://cdn.skypack.dev/@humanwhocodes/array-w
 After importing, create a new instance of `ArrayWithDefault`. The constructor expects one object argument with the following properties:
 
 * `default` **(required)** - the default value to return for the missing items.
+  * Note: can be a callback: `(index: number) => any`
 * `elements` - an optional iterable object used to populate the array.
 * `length` - an optional value to set the array's `length` property to.
 * `outOfRange` - an optional value that, when set to `true`, indicates that numeric indices after the end of the array should also return the default value.
@@ -116,19 +124,29 @@ console.log(emptyItems[4]);     // 0
 // items past the end still return undefined
 console.log(emptyItems[5]);     // undefined
 
-const numbers = new ArrayWithDefault({
+const numberItems = new ArrayWithDefault({
     default: 0,
     elements: [1, 2, 3],
     outOfRange: true
 });
 
-// all elements return 0
-console.log(emptyItems[0]);     // 1
-console.log(emptyItems[1]);     // 2
-console.log(emptyItems[2]);     // 3
-console.log(emptyItems[3]);     // 0
-console.log(emptyItems[4]);     // 0
-console.log(emptyItems[5]);     // 0
+// all missing elements return 0
+console.log(numberItems[0]);     // 1
+console.log(numberItems[1]);     // 2
+console.log(numberItems[2]);     // 3
+console.log(numberItems[3]);     // 0
+console.log(numberItems[4]);     // 0
+console.log(numberItems[5]);     // 0
+
+const objectItems = new ArrayWithDefault({
+    default: (index: number) => ({}), // callback
+    elements: [{ id: 42 }],
+    outOfRange: true
+});
+
+// default callback returns an empty object
+console.log(objectItems[0]);     // { id: 42 }
+console.log(objectItems[1]);     // {}
 ```
 
 ## Developer Setup
