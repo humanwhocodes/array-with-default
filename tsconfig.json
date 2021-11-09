@@ -2,6 +2,7 @@
     "include": [
         "dist/array-with-default.js"
     ],
+    "exclude": [],
     "compilerOptions": {
         "declaration": true,
         "emitDeclarationOnly": true,
